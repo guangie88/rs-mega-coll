@@ -1,0 +1,27 @@
+[package]
+name = "mega-coll"
+version = "0.1.0"
+authors = ["Chen Weiguang <chen.weiguang@gmail.com>"]
+
+[dependencies]
+failure = "0.1"
+failure_derive = "0.1"
+fruently = "0.10"
+fs2 = "0.4"
+lazy_static = "1"
+log = "0.4"
+log4rs = "0.8"
+regex = "0.2"
+serde = "1"
+serde_derive = "1"
+serde-humantime = { git = "https://github.com/tailhook/serde-humantime.git", rev = "f76450e"}
+simple_logger = "0.5"
+structopt = "0.2"
+toml = "0.4"
+
+[dev-dependencies]
+indoc = "0.2"
+
+[lib]
+name = "mega_coll"
+path = "src/lib.rs"
