@@ -6,19 +6,6 @@ use std::fs::{File, OpenOptions};
 use std::io::Read;
 use std::path::Path;
 
-pub fn read_from_file<P: AsRef<Path>>(p: P) -> Result<String> {
-    let mut buf = String::new();
-    let p = p.as_ref();
-
-    let mut file = File::open(p)
-        .map_err(|e| PathError::new(p.to_string_lossy().to_string(), e))
-        .context(ErrorKind::FileIo)?;
-
-    file.read_to_string(&mut buf)
-        .context(ErrorKind::FileIo)?;
-    Ok(buf)
-}
-
 pub fn lock_file<P: AsRef<Path>>(file_path: P) -> Result<File> {
     let file_path = file_path.as_ref();
 
@@ -35,4 +22,17 @@ pub fn lock_file<P: AsRef<Path>>(file_path: P) -> Result<File> {
         .context(ErrorKind::LockFileExclusiveLock)?;
 
     Ok(flock)
+}
+
+pub fn read_from_file<P: AsRef<Path>>(p: P) -> Result<String> {
+    let mut buf = String::new();
+    let p = p.as_ref();
+
+    let mut file = File::open(p)
+        .map_err(|e| PathError::new(p.to_string_lossy().to_string(), e))
+        .context(ErrorKind::FileIo)?;
+
+    file.read_to_string(&mut buf)
+        .context(ErrorKind::FileIo)?;
+    Ok(buf)
 }

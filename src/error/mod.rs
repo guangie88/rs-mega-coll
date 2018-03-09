@@ -62,6 +62,9 @@ pub enum ErrorKind {
     #[fail(display = "Specialized logger initialization error")]
     SpecializedLoggerInit,
 
+    #[fail(display = "Error getting statvfs on path")]
+    Statvfs,
+
     #[fail(display = "Conversion from UTF8 stderr to string fail")]
     StderrUtf8Conversion,
 
