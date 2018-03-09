@@ -7,7 +7,7 @@ use fruently::forwardable::JsonForwardable;
 use fruently::retry_conf::RetryConf;
 use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 use std::path::Path;
 use toml;
 use util::fs::read_from_file;
@@ -39,6 +39,18 @@ where
         .context(ErrorKind::FluentInitCheck)?;
 
     Ok(fluent)
+}
+
+pub fn print_run_status<M>(res: &Result<()>, success_msg: M)
+where
+    M: Display,
+{
+    match *res {
+        Ok(_) => info!("{}", success_msg),
+        Err(ref e) => {
+            error!("{}", e);
+        }
+    }
 }
 
 pub fn read_config_file<P, C>(conf_path: P) -> Result<C>

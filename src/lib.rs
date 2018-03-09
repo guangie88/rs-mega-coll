@@ -5,6 +5,8 @@ extern crate failure;
 extern crate failure_derive;
 extern crate fruently;
 extern crate fs2;
+#[macro_use]
+extern crate log;
 extern crate regex;
 extern crate serde;
 #[macro_use]
