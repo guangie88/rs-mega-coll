@@ -1,3 +1,4 @@
+use conf::app::{ArgConf, Conf};
 use conf::fluentd;
 use error::{ErrorKind, Result};
 use error::custom::PathError;
@@ -5,8 +6,9 @@ use failure::ResultExt;
 use fruently::fluent::Fluent;
 use fruently::forwardable::JsonForwardable;
 use fruently::retry_conf::RetryConf;
-use serde::de::DeserializeOwned;
+use log4rs;
 use serde::ser::Serialize;
+use simple_logger;
 use std::fmt::{Debug, Display};
 use std::path::Path;
 use toml;
@@ -41,6 +43,26 @@ where
     Ok(fluent)
 }
 
+pub fn init_config<A, C>() -> Result<C>
+where
+    A: ArgConf,
+    C: Conf,
+{
+    let arg_conf = A::from_args();
+    let conf: C = read_config_file(arg_conf.conf())?;
+
+    match conf.general().log_conf_path {
+        Some(ref log_conf_path) => {
+            log4rs::init_file(log_conf_path, Default::default())
+                .map_err(|e| PathError::new(log_conf_path, e))
+                .context(ErrorKind::SpecializedLoggerInit)?
+        }
+        None => simple_logger::init().context(ErrorKind::DefaultLoggerInit)?,
+    }
+
+    Ok(conf)
+}
+
 pub fn print_run_status<M>(res: &Result<()>, success_msg: M)
 where
     M: Display,
@@ -56,7 +78,7 @@ where
 pub fn read_config_file<P, C>(conf_path: P) -> Result<C>
 where
     P: AsRef<Path>,
-    C: DeserializeOwned,
+    C: Conf,
 {
     let conf_path = conf_path.as_ref();
 

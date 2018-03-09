@@ -16,6 +16,7 @@ serde = "1"
 serde_derive = "1"
 serde-humantime = { git = "https://github.com/tailhook/serde-humantime.git", rev = "f76450e"}
 simple_logger = "0.5"
+structopt = "0.2"
 toml = "0.4"
 
 [dev-dependencies]
