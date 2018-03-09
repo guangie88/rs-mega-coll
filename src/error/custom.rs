@@ -66,6 +66,33 @@ where
 }
 
 #[derive(Debug, Fail)]
+#[fail(display = "{{ query: {}, inner: {} }}", query, inner)]
+pub struct QueryError<E>
+where
+    E: Fail,
+{
+    query: String,
+
+    #[cause]
+    inner: E,
+}
+
+impl<E> QueryError<E>
+where
+    E: Fail,
+{
+    pub fn new<Q>(query: Q, inner: E) -> QueryError<E>
+    where
+        Q: Into<String>,
+    {
+        QueryError {
+            query: query.into(),
+            inner,
+        }
+    }
+}
+
+#[derive(Debug, Fail)]
 #[fail(display = "{{ pattern: {}, target: {} }}", pattern, target)]
 pub struct RegexCaptureError {
     pattern: String,
@@ -138,6 +165,11 @@ mod tests {
     #[test]
     fn test_path_error_trait() {
         PathError::new("Fake path", FakeError).context(FakeErrorKind);
+    }
+
+    #[test]
+    fn test_query_error_trait() {
+        QueryError::new("Fake query", FakeError).context(FakeErrorKind);
     }
 
     #[test]

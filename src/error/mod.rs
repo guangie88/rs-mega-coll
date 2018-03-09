@@ -53,6 +53,12 @@ pub enum ErrorKind {
     #[fail(display = "Cannot parse hdfs dfs -df used value")]
     ParseHdfsDfUsedValue,
 
+    #[fail(display = "Cannot connect to Postgres server")]
+    PgConnection,
+
+    #[fail(display = "Cannot execute Postgres query to get database sizes")]
+    PgGetDbSizes,
+
     #[fail(display = "Cannot capture values from hdfs dfs -df extraction")]
     RegexHdfsDfValuesCap,
 
