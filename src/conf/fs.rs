@@ -1,4 +1,4 @@
 #[derive(Deserialize, Debug)]
-pub struct FsConfig {
+pub struct Config {
     pub path: String,
 }
