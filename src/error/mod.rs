@@ -26,7 +26,7 @@ pub enum ErrorKind {
     #[fail(display = "Fluent post from tagged record error")]
     FluentPostTaggedRecord,
 
-    #[fail(display = "Cannot find hdfs command from which")]
+    #[fail(display = "Cannot find hdfs command")]
     HdfsNotAvailable,
 
     #[fail(display = "Error running hdfs dfs -df command")]
@@ -35,7 +35,7 @@ pub enum ErrorKind {
     #[fail(display = "kinit for username and keytab combi returns error")]
     KinitKeytab,
 
-    #[fail(display = "Cannot find kinit command from which")]
+    #[fail(display = "Cannot find kinit command")]
     KinitNotAvailable,
 
     #[fail(display = "kinit for username and password combi returns error")]
