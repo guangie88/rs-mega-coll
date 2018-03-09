@@ -8,7 +8,7 @@ pub enum Auth<'a> {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct KInitConfig<'a> {
+pub struct Config<'a> {
     pub login: String,
     pub auth: Auth<'a>,
 }

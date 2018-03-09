@@ -33,7 +33,9 @@ impl MsgError {
     where
         S: Into<String>,
     {
-        MsgError { msg: msg.into() }
+        MsgError {
+            msg: msg.into(),
+        }
     }
 }
 
