@@ -66,6 +66,23 @@ where
 }
 
 #[derive(Debug, Fail)]
+#[fail(display = "{{ perm: {} }}", perm)]
+pub struct PermError {
+    pub perm: String,
+}
+
+impl PermError {
+    pub fn new<P>(perm: P) -> PermError
+    where
+        P: Into<String>,
+    {
+        PermError {
+            perm: perm.into(),
+        }
+    }
+}
+
+#[derive(Debug, Fail)]
 #[fail(display = "{{ query: {}, inner: {} }}", query, inner)]
 pub struct QueryError<E>
 where
