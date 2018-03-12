@@ -1,5 +1,8 @@
 #![cfg_attr(feature = "cargo-clippy", deny(warnings))]
 
+extern crate chrono;
+#[macro_use]
+extern crate derive_getters;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
@@ -19,4 +22,5 @@ extern crate toml;
 
 pub mod conf;
 pub mod error;
+pub mod json;
 pub mod util;
