@@ -5,8 +5,8 @@ use std::path::PathBuf;
 #[derive(Debug, Fail)]
 #[fail(display = "{{ code: {:?}, msg: {} }}", code, msg)]
 pub struct CodeMsgError {
-    code: Option<i32>,
-    msg: String,
+    pub code: Option<i32>,
+    pub msg: String,
 }
 
 impl CodeMsgError {
@@ -25,7 +25,7 @@ impl CodeMsgError {
 #[derive(Debug, Fail)]
 #[fail(display = "{{ msg: {} }}", msg)]
 pub struct MsgError {
-    msg: String,
+    pub msg: String,
 }
 
 impl MsgError {
@@ -45,9 +45,9 @@ pub struct PathError<E>
 where
     E: Fail,
 {
-    path: PathBuf,
+    pub path: PathBuf,
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> PathError<E>
@@ -88,10 +88,10 @@ pub struct QueryError<E>
 where
     E: Fail,
 {
-    query: String,
+    pub query: String,
 
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> QueryError<E>
@@ -112,8 +112,8 @@ where
 #[derive(Debug, Fail)]
 #[fail(display = "{{ pattern: {}, target: {} }}", pattern, target)]
 pub struct RegexCaptureError {
-    pattern: String,
-    target: String,
+    pub pattern: String,
+    pub target: String,
 }
 
 impl RegexCaptureError {
@@ -134,9 +134,9 @@ pub struct TargetStringError<E>
 where
     E: Fail,
 {
-    target: String,
+    pub target: String,
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> TargetStringError<E>
@@ -182,6 +182,11 @@ mod tests {
     #[test]
     fn test_path_error_trait() {
         PathError::new("Fake path", FakeError).context(FakeErrorKind);
+    }
+
+    #[test]
+    fn test_perm_error_trait() {
+        PermError::new("Fake perm", FakeError).context(FakeErrorKind);
     }
 
     #[test]
