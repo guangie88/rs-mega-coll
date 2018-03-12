@@ -23,6 +23,7 @@ toml = "0.4"
 
 [dev-dependencies]
 indoc = "0.2"
+serde_json = "1"
 
 [lib]
 name = "mega_coll"

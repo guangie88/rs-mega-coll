@@ -52,7 +52,7 @@ impl StorageBuilder {
 mod tests {
     extern crate serde_json;
 
-    use self::chrono::{TimeZone, Utc};
+    use chrono::{TimeZone, Utc};
     use super::*;
 
     #[test]
