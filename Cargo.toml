@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["Chen Weiguang <chen.weiguang@gmail.com>"]
 
 [dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+derive-getters = "^0.0.3"
 failure = "0.1"
 failure_derive = "0.1"
 fruently = "0.10"
@@ -21,6 +23,7 @@ toml = "0.4"
 
 [dev-dependencies]
 indoc = "0.2"
+serde_json = "1"
 
 [lib]
 name = "mega_coll"
