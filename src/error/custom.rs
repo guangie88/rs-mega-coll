@@ -129,6 +129,35 @@ impl RegexCaptureError {
 }
 
 #[derive(Debug, Fail)]
+#[fail(display = "{{ found len: {}, expected len: {}, target: {}, regex: {} }}",
+       found_len, expected_len, target, re_str)]
+pub struct RegexMinCaptureError {
+    pub found_len: usize,
+    pub expected_len: usize,
+    pub target: String,
+    pub re_str: String,
+}
+
+impl RegexMinCaptureError {
+    pub fn new<T>(
+        found_len: usize,
+        expected_len: usize,
+        target: T,
+        re: &Regex,
+    ) -> RegexMinCaptureError
+    where
+        T: Into<String>,
+    {
+        RegexMinCaptureError {
+            found_len,
+            expected_len,
+            target: target.into(),
+            re_str: re.as_str().to_owned(),
+        }
+    }
+}
+
+#[derive(Debug, Fail)]
 #[fail(display = "{{ target: {}, inner: {} }}", target, inner)]
 pub struct TargetStringError<E>
 where
@@ -186,7 +215,7 @@ mod tests {
 
     #[test]
     fn test_perm_error_trait() {
-        PermError::new("Fake perm", FakeError).context(FakeErrorKind);
+        PermError::new("Fake perm").context(FakeErrorKind);
     }
 
     #[test]
@@ -201,6 +230,16 @@ mod tests {
         let fake_regex = fake_regex.unwrap();
 
         RegexCaptureError::new(&fake_regex, "Fake target")
+            .context(FakeErrorKind);
+    }
+
+    #[test]
+    fn test_regex_min_capture_error_trait() {
+        let fake_regex = Regex::new("");
+        assert!(fake_regex.is_ok());
+        let fake_regex = fake_regex.unwrap();
+
+        RegexMinCaptureError::new(0, 0, "Fake target", &fake_regex)
             .context(FakeErrorKind);
     }
 
