@@ -1,8 +1,8 @@
 use conf::app::{ArgConf, Conf};
 use conf::fluentd;
-use error::{ErrorKind, Result};
+use error::{Error, ErrorKind};
 use error::custom::PathError;
-use failure::ResultExt;
+use failure::{Fail, ResultExt};
 use fruently::fluent::Fluent;
 use fruently::forwardable::JsonForwardable;
 use fruently::retry_conf::RetryConf;
@@ -14,12 +14,13 @@ use std::path::Path;
 use toml;
 use util::fs::read_from_file;
 
-pub fn create_and_check_fluent<T>(
+pub fn create_and_check_fluent<T, K>(
     conf: &fluentd::Config,
     init_msg: T,
-) -> Result<Fluent<&String>>
+) -> Result<Fluent<&String>, Error<K>>
 where
     T: Debug + Serialize,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
 {
     let fluent_conf = RetryConf::new()
         .max(conf.try_count)
@@ -43,10 +44,11 @@ where
     Ok(fluent)
 }
 
-pub fn init_config<A, C>() -> Result<C>
+pub fn init_config<A, C, K>() -> Result<C, Error<K>>
 where
     A: ArgConf,
     C: Conf,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
 {
     let arg_conf = A::from_args();
     let conf: C = read_config_file(arg_conf.conf())?;
@@ -63,9 +65,10 @@ where
     Ok(conf)
 }
 
-pub fn print_run_status<M>(res: &Result<()>, success_msg: M)
+pub fn print_run_status<M, T, K>(res: &Result<T, Error<K>>, success_msg: M)
 where
     M: Display,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
 {
     match *res {
         Ok(_) => info!("{}", success_msg),
@@ -75,10 +78,11 @@ where
     }
 }
 
-pub fn read_config_file<P, C>(conf_path: P) -> Result<C>
+pub fn read_config_file<P, C, K>(conf_path: P) -> Result<C, Error<K>>
 where
     P: AsRef<Path>,
     C: Conf,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
 {
     let conf_path = conf_path.as_ref();
 

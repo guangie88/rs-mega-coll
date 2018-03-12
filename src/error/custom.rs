@@ -1,12 +1,13 @@
-use failure::Fail;
+use failure::{Backtrace, Fail};
 use regex::Regex;
+use std::fmt::{self, Debug, Display};
 use std::path::PathBuf;
 
 #[derive(Debug, Fail)]
 #[fail(display = "{{ code: {:?}, msg: {} }}", code, msg)]
 pub struct CodeMsgError {
-    code: Option<i32>,
-    msg: String,
+    pub code: Option<i32>,
+    pub msg: String,
 }
 
 impl CodeMsgError {
@@ -25,7 +26,7 @@ impl CodeMsgError {
 #[derive(Debug, Fail)]
 #[fail(display = "{{ msg: {} }}", msg)]
 pub struct MsgError {
-    msg: String,
+    pub msg: String,
 }
 
 impl MsgError {
@@ -45,9 +46,9 @@ pub struct PathError<E>
 where
     E: Fail,
 {
-    path: PathBuf,
+    pub path: PathBuf,
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> PathError<E>
@@ -66,15 +67,32 @@ where
 }
 
 #[derive(Debug, Fail)]
+#[fail(display = "{{ perm: {} }}", perm)]
+pub struct PermError {
+    pub perm: String,
+}
+
+impl PermError {
+    pub fn new<P>(perm: P) -> PermError
+    where
+        P: Into<String>,
+    {
+        PermError {
+            perm: perm.into(),
+        }
+    }
+}
+
+#[derive(Debug, Fail)]
 #[fail(display = "{{ query: {}, inner: {} }}", query, inner)]
 pub struct QueryError<E>
 where
     E: Fail,
 {
-    query: String,
+    pub query: String,
 
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> QueryError<E>
@@ -95,8 +113,8 @@ where
 #[derive(Debug, Fail)]
 #[fail(display = "{{ pattern: {}, target: {} }}", pattern, target)]
 pub struct RegexCaptureError {
-    pattern: String,
-    target: String,
+    pub pattern: String,
+    pub target: String,
 }
 
 impl RegexCaptureError {
@@ -112,14 +130,43 @@ impl RegexCaptureError {
 }
 
 #[derive(Debug, Fail)]
+#[fail(display = "{{ found len: {}, expected len: {}, target: {}, regex: {} }}",
+       found_len, expected_len, target, re_str)]
+pub struct RegexMinCaptureError {
+    pub found_len: usize,
+    pub expected_len: usize,
+    pub target: String,
+    pub re_str: String,
+}
+
+impl RegexMinCaptureError {
+    pub fn new<T>(
+        found_len: usize,
+        expected_len: usize,
+        target: T,
+        re: &Regex,
+    ) -> RegexMinCaptureError
+    where
+        T: Into<String>,
+    {
+        RegexMinCaptureError {
+            found_len,
+            expected_len,
+            target: target.into(),
+            re_str: re.as_str().to_owned(),
+        }
+    }
+}
+
+#[derive(Debug, Fail)]
 #[fail(display = "{{ target: {}, inner: {} }}", target, inner)]
 pub struct TargetStringError<E>
 where
     E: Fail,
 {
-    target: String,
+    pub target: String,
     #[cause]
-    inner: E,
+    pub inner: E,
 }
 
 impl<E> TargetStringError<E>
@@ -133,6 +180,56 @@ where
         TargetStringError {
             target: target.into(),
             inner,
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct ValueError<T>
+where
+    T: Debug + Display + Send + Sync + 'static,
+{
+    pub desc: String,
+    pub value: T,
+}
+
+impl<T> Fail for ValueError<T>
+where
+    T: Debug + Display + Sync + Send + 'static,
+{
+    fn cause(&self) -> Option<&Fail> {
+        None
+    }
+
+    fn backtrace(&self) -> Option<&Backtrace> {
+        None
+    }
+}
+
+impl<T> Display for ValueError<T>
+where
+    T: Debug + Display + Sync + Send + 'static,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{{ desc: {}, value: {} }}",
+            self.desc, self.value
+        )
+    }
+}
+
+impl<T> ValueError<T>
+where
+    T: Debug + Display + Send + Sync + 'static,
+{
+    pub fn new<S>(desc: S, value: T) -> ValueError<T>
+    where
+        S: Into<String>,
+    {
+        ValueError {
+            desc: desc.into(),
+            value,
         }
     }
 }
@@ -168,6 +265,11 @@ mod tests {
     }
 
     #[test]
+    fn test_perm_error_trait() {
+        PermError::new("Fake perm").context(FakeErrorKind);
+    }
+
+    #[test]
     fn test_query_error_trait() {
         QueryError::new("Fake query", FakeError).context(FakeErrorKind);
     }
@@ -183,7 +285,22 @@ mod tests {
     }
 
     #[test]
+    fn test_regex_min_capture_error_trait() {
+        let fake_regex = Regex::new("");
+        assert!(fake_regex.is_ok());
+        let fake_regex = fake_regex.unwrap();
+
+        RegexMinCaptureError::new(0, 0, "Fake target", &fake_regex)
+            .context(FakeErrorKind);
+    }
+
+    #[test]
     fn test_target_string_error_trait() {
         TargetStringError::new("Fake", FakeError).context(FakeErrorKind);
+    }
+
+    #[test]
+    fn test_value_error_trait() {
+        ValueError::new("Fake description", 123).context(FakeErrorKind);
     }
 }

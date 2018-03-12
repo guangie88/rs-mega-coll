@@ -1,16 +1,22 @@
-use error::{Error, ErrorKind, Result};
+use error::{Error, ErrorKind};
 use error::custom::{CodeMsgError, MsgError};
-use failure::{Fail, ResultExt};
+use failure::{Context, Fail, ResultExt};
+use std::fmt::Debug;
 use std::io::Read;
 use std::process::{Child, ChildStdout, Output};
 
-pub fn extract_child_stdout(child: Child) -> Result<ChildStdout> {
+pub fn extract_child_stdout<K>(child: Child) -> Result<ChildStdout, Error<K>>
+where
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     let (stdout, stderr) = (child.stdout, child.stderr);
 
     let stdout = stdout.ok_or_else(|| {
         let msg_err = stderr
-            .ok_or_else(|| -> Error { ErrorKind::StderrEmpty.into() })
-            .and_then(|mut bytes| -> Result<Error> {
+            .ok_or_else(|| -> Error<K> {
+                Context::new(ErrorKind::StderrEmpty).into()
+            })
+            .and_then(|mut bytes| -> Result<Error<K>, Error<K>> {
                 let mut msg = String::new();
 
                 bytes
@@ -30,7 +36,10 @@ pub fn extract_child_stdout(child: Child) -> Result<ChildStdout> {
     Ok(stdout)
 }
 
-pub fn extract_output_stdout_str(output: Output) -> Result<String> {
+pub fn extract_output_stdout_str<K>(output: Output) -> Result<String, Error<K>>
+where
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     let output = if output.status.success() {
         String::from_utf8(output.stdout)
             .context(ErrorKind::StdoutUtf8Conversion)

@@ -1,12 +1,17 @@
-use error::{ErrorKind, Result};
+use error::{Error, ErrorKind};
 use error::custom::PathError;
-use failure::ResultExt;
+use failure::{Fail, ResultExt};
 use fs2::FileExt;
+use std::fmt::Debug;
 use std::fs::{File, OpenOptions};
 use std::io::Read;
 use std::path::Path;
 
-pub fn lock_file<P: AsRef<Path>>(file_path: P) -> Result<File> {
+pub fn lock_file<P: AsRef<Path>, K>(file_path: P) -> Result<File, Error<K>>
+where
+    P: AsRef<Path>,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     let file_path = file_path.as_ref();
 
     let flock = OpenOptions::new()
@@ -24,7 +29,11 @@ pub fn lock_file<P: AsRef<Path>>(file_path: P) -> Result<File> {
     Ok(flock)
 }
 
-pub fn read_from_file<P: AsRef<Path>>(p: P) -> Result<String> {
+pub fn read_from_file<P, K>(p: P) -> Result<String, Error<K>>
+where
+    P: AsRef<Path>,
+    K: From<ErrorKind> + Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     let mut buf = String::new();
     let p = p.as_ref();
 
