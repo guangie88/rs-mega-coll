@@ -194,22 +194,16 @@ where
     }
 }
 
-impl<K> From<K> for Error<K>
+impl<K1, K2> From<Context<K1>> for Error<K2>
 where
-    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+    K1: Into<K2> + Copy + Clone + Eq + PartialEq + Debug + Fail,
+    K2: Copy + Clone + Eq + PartialEq + Debug + Fail,
 {
-    fn from(kind: K) -> Error<K> {
-        Error {
-            inner: Context::new(kind),
-        }
-    }
-}
+    fn from(inner: Context<K1>) -> Error<K2> {
+        let new_context = inner.get_context().clone().into();
 
-impl<K> From<Context<K>> for Error<K>
-where
-    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
-{
-    fn from(inner: Context<K>) -> Error<K> {
-        Error { inner }
+        Error {
+            inner: Context::new(new_context),
+        }
     }
 }

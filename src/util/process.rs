@@ -1,6 +1,6 @@
 use error::{Error, ErrorKind, Result};
 use error::custom::{CodeMsgError, MsgError};
-use failure::{Fail, ResultExt};
+use failure::{Context, Fail, ResultExt};
 use std::io::Read;
 use std::process::{Child, ChildStdout, Output};
 
@@ -10,7 +10,7 @@ pub fn extract_child_stdout(child: Child) -> Result<ChildStdout> {
     let stdout = stdout.ok_or_else(|| {
         let msg_err = stderr
             .ok_or_else(|| -> Error<ErrorKind> {
-                ErrorKind::StderrEmpty.into()
+                Context::new(ErrorKind::StderrEmpty).into()
             })
             .and_then(|mut bytes| -> Result<Error<ErrorKind>> {
                 let mut msg = String::new();
