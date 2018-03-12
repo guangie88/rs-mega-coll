@@ -11,6 +11,27 @@ pub enum ErrorKind {
     #[fail(display = "Child output error")]
     ChildOutput,
 
+    #[fail(display = "CSV entry record parse error")]
+    CsvEntryParse,
+
+    #[fail(display = "Database entry cache creation error")]
+    DbEntryCreate,
+
+    #[fail(display = "Database entry cache delete error")]
+    DbEntryDelete,
+
+    #[fail(display = "Parse database entry expiry error")]
+    DbEntryExpiryParse,
+
+    #[fail(display = "Database entry serialize error")]
+    DbEntrySerialize,
+
+    #[fail(display = "Get database new iterator error")]
+    DbNewIter,
+
+    #[fail(display = "Database file open error")]
+    DbOpen,
+
     #[fail(display = "Default logger initialization error")]
     DefaultLoggerInit,
 
@@ -32,6 +53,12 @@ pub enum ErrorKind {
     #[fail(display = "Fluent post from tagged record error")]
     FluentPostTaggedRecord,
 
+    #[fail(display = "Match glob error")]
+    Glob,
+
+    #[fail(display = "Hash date time parse error")]
+    HashDateTimeParse,
+
     #[fail(display = "Error invoking hdfs dfs -copyToLocal")]
     HdfsCopyToLocal,
 
@@ -46,6 +73,12 @@ pub enum ErrorKind {
 
     #[fail(display = "Error creating regex for hdfs matches")]
     HdfsRegexMatch,
+
+    #[fail(display = "Invalid date target")]
+    InvalidDateTarget,
+
+    #[fail(display = "Invalid path after glob")]
+    InvalidPathAfterGlob,
 
     #[fail(display = "kinit for username and keytab combi returns error")]
     KinitKeytab,
@@ -89,6 +122,9 @@ pub enum ErrorKind {
     #[fail(display = "Cannot get initial hdfs dfs -df regex capture")]
     RegexInitialHdfsDfCap,
 
+    #[fail(display = "Regex minimum capture error")]
+    RegexMinCapture,
+
     #[fail(display = "Specialized logger initialization error")]
     SpecializedLoggerInit,
 
@@ -112,6 +148,9 @@ pub enum ErrorKind {
 
     #[fail(display = "Unable to strip root '/' from path")]
     StripRootPath,
+
+    #[fail(display = "Pretty string conversion error")]
+    ToStringPretty,
 
     #[fail(display = "TOML config parse error")]
     TomlConfigParse,
