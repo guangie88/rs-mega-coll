@@ -34,7 +34,9 @@ impl MsgError {
     where
         S: Into<String>,
     {
-        MsgError { msg: msg.into() }
+        MsgError {
+            msg: msg.into(),
+        }
     }
 }
 
@@ -75,7 +77,9 @@ impl PermError {
     where
         P: Into<String>,
     {
-        PermError { perm: perm.into() }
+        PermError {
+            perm: perm.into(),
+        }
     }
 }
 
@@ -207,7 +211,11 @@ where
     T: Debug + Display + Sync + Send + 'static,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{{ desc: {}, value: {} }}", self.desc, self.value)
+        write!(
+            f,
+            "{{ desc: {}, value: {} }}",
+            self.desc, self.value
+        )
     }
 }
 

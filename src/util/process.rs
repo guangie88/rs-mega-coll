@@ -23,7 +23,9 @@ where
                     .read_to_string(&mut msg)
                     .context(ErrorKind::StderrRead)?;
 
-                Ok(MsgError::new(msg).context(ErrorKind::StderrValidMsg).into())
+                Ok(MsgError::new(msg)
+                    .context(ErrorKind::StderrValidMsg)
+                    .into())
             });
 
         match msg_err {

@@ -62,7 +62,11 @@ mod tests {
 
         let builder = StorageBuilder::default();
 
-        let v = builder.path("/").capacity(CAPACITY).used(USED).build();
+        let v = builder
+            .path("/")
+            .capacity(CAPACITY)
+            .used(USED)
+            .build();
 
         // assigned fields
         assert_eq!("/", v.path());
@@ -103,7 +107,10 @@ mod tests {
         assert_eq!(750, *v.remaining());
         assert_eq!(0.25, *v.used_prop());
         assert_eq!(0.75, *v.remaining_prop());
-        assert_eq!(Utc.ymd(2017, 1, 20).and_hms(13, 8, 35), *v.datetime());
+        assert_eq!(
+            Utc.ymd(2017, 1, 20).and_hms(13, 8, 35),
+            *v.datetime()
+        );
     }
 
     #[test]
@@ -113,7 +120,11 @@ mod tests {
 
         let builder = StorageBuilder::default();
 
-        let v = builder.path("/").capacity(CAPACITY).used(USED).build();
+        let v = builder
+            .path("/")
+            .capacity(CAPACITY)
+            .used(USED)
+            .build();
 
         // check for Serialize trait
         let s = serde_json::to_string(&v);
@@ -127,7 +138,11 @@ mod tests {
 
         let builder = StorageBuilder::default();
 
-        let v = builder.path("/").capacity(CAPACITY).used(USED).build();
+        let v = builder
+            .path("/")
+            .capacity(CAPACITY)
+            .used(USED)
+            .build();
 
         // check for Debug trait
         format!("{:?}", v);
