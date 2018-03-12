@@ -158,7 +158,7 @@ pub enum ErrorKind {
 
 #[derive(Debug)]
 pub struct Error {
-    inner: Context<ErrorKind>,
+    pub inner: Context<ErrorKind>,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
