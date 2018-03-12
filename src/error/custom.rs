@@ -1,5 +1,6 @@
-use failure::Fail;
+use failure::{Backtrace, Fail};
 use regex::Regex;
+use std::fmt::{self, Debug, Display};
 use std::path::PathBuf;
 
 #[derive(Debug, Fail)]
@@ -183,6 +184,56 @@ where
     }
 }
 
+#[derive(Debug)]
+pub struct ValueError<T>
+where
+    T: Debug + Display + Send + Sync + 'static,
+{
+    pub desc: String,
+    pub value: T,
+}
+
+impl<T> Fail for ValueError<T>
+where
+    T: Debug + Display + Sync + Send + 'static,
+{
+    fn cause(&self) -> Option<&Fail> {
+        None
+    }
+
+    fn backtrace(&self) -> Option<&Backtrace> {
+        None
+    }
+}
+
+impl<T> Display for ValueError<T>
+where
+    T: Debug + Display + Sync + Send + 'static,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{{ desc: {}, value: {} }}",
+            self.desc, self.value
+        )
+    }
+}
+
+impl<T> ValueError<T>
+where
+    T: Debug + Display + Send + Sync + 'static,
+{
+    pub fn new<S>(desc: S, value: T) -> ValueError<T>
+    where
+        S: Into<String>,
+    {
+        ValueError {
+            desc: desc.into(),
+            value,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -246,5 +297,10 @@ mod tests {
     #[test]
     fn test_target_string_error_trait() {
         TargetStringError::new("Fake", FakeError).context(FakeErrorKind);
+    }
+
+    #[test]
+    fn test_value_error_trait() {
+        ValueError::new("Fake description", 123).context(FakeErrorKind);
     }
 }
