@@ -179,6 +179,37 @@ where
     }
 }
 
+fn fail_opt_to_str(opt: &Option<&Fail>) -> String {
+    match *opt {
+        Some(cause) => format!(", cause: {}", rec_format_fail(cause)),
+        None => "".to_owned(),
+    }
+}
+
+fn backtrace_opt_to_str(opt: &Option<&Backtrace>) -> String {
+    match *opt {
+        Some(backtrace) => {
+            let s = format!("{}", backtrace);
+
+            if s.is_empty() {
+                s
+            } else {
+                format!(", backtrace: {}", s)
+            }
+        }
+        None => "".to_owned(),
+    }
+}
+
+fn rec_format_fail(f: &Fail) -> String {
+    format!(
+        "{{ inner: {}{}{} }}",
+        f,
+        fail_opt_to_str(&f.cause()),
+        backtrace_opt_to_str(&f.backtrace())
+    )
+}
+
 impl<K> Display for Error<K>
 where
     K: Copy + Clone + Eq + PartialEq + Debug + Fail,
@@ -186,10 +217,10 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "{{ inner: {}, cause: {:?}, backtrace: {:?} }}",
+            "{{ inner: {}{}{} }}",
             self.inner,
-            self.cause(),
-            self.backtrace()
+            fail_opt_to_str(&self.cause()),
+            backtrace_opt_to_str(&self.backtrace())
         )
     }
 }
@@ -203,7 +234,88 @@ where
         let new_context = inner.get_context().clone().into();
 
         Error {
-            inner: Context::new(new_context),
+            inner: inner.context(new_context),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use failure::ResultExt;
+
+    #[derive(Debug, Fail)]
+    #[fail(display = "{{ msg: {} }}", msg)]
+    struct FakeError {
+        msg: &'static str,
+    }
+
+    impl FakeError {
+        fn new(msg: &'static str) -> FakeError {
+            FakeError { msg }
+        }
+    }
+
+    #[cfg_attr(feature = "cargo-clippy", allow(empty_line_after_outer_attr))]
+    #[derive(Copy, Clone, Eq, PartialEq, Debug, Fail)]
+    enum FirstFakeErrorKind {
+        #[fail(display = "FakeOneInner")]
+        FakeOneInner,
+    }
+
+    #[cfg_attr(feature = "cargo-clippy", allow(empty_line_after_outer_attr))]
+    #[derive(Copy, Clone, Eq, PartialEq, Debug, Fail)]
+    enum SecondFakeErrorKind {
+        #[fail(display = "FakeTwoInner")]
+        FakeTwoInner,
+    }
+
+    #[cfg_attr(feature = "cargo-clippy", allow(empty_line_after_outer_attr))]
+    #[derive(Copy, Clone, Eq, PartialEq, Debug, Fail)]
+    enum MergedFakeErrorKind {
+        #[fail(display = "FakeOneOuter")]
+        FakeOneOuter,
+
+        #[fail(display = "FakeTwoOuter")]
+        FakeTwoOuter,
+    }
+
+    impl From<FirstFakeErrorKind> for MergedFakeErrorKind {
+        fn from(_: FirstFakeErrorKind) -> MergedFakeErrorKind {
+            MergedFakeErrorKind::FakeOneOuter
+        }
+    }
+
+    impl From<SecondFakeErrorKind> for MergedFakeErrorKind {
+        fn from(_: SecondFakeErrorKind) -> MergedFakeErrorKind {
+            MergedFakeErrorKind::FakeTwoOuter
+        }
+    }
+
+    #[test]
+    fn test_from_context_for_error_fake_one() {
+        let res = || -> std::result::Result<(), Error<MergedFakeErrorKind>> {
+            Err(FakeError::new("Fake msg"))
+                .context(FirstFakeErrorKind::FakeOneInner)?
+        }();
+
+        assert!(res.is_err());
+
+        // can use `cargo test -- --nocapture` to see the result
+        println!("{}", res.unwrap_err());
+    }
+
+    #[test]
+    fn test_from_context_for_error_fake_two() {
+        let res = || -> std::result::Result<(), Error<MergedFakeErrorKind>> {
+            Err(FakeError::new("Fake msg"))
+                .context(SecondFakeErrorKind::FakeTwoInner)?
+        }();
+
+        assert!(res.is_err());
+
+        // can use `cargo test -- --nocapture` to see the result
+        println!("{}", res.unwrap_err());
     }
 }

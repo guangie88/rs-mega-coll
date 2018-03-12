@@ -41,7 +41,6 @@ where
         .map_err(|e| PathError::new(p.to_string_lossy().to_string(), e))
         .context(ErrorKind::FileIo)?;
 
-    file.read_to_string(&mut buf)
-        .context(ErrorKind::FileIo)?;
+    file.read_to_string(&mut buf).context(ErrorKind::FileIo)?;
     Ok(buf)
 }
