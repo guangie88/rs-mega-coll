@@ -5,7 +5,7 @@ pub struct DfConfig {
 
 #[derive(Deserialize, Debug)]
 pub struct CopyConfig {
-    path: String,
-    matches: Vec<String>,
-    copy_to: String,
+    pub path: String,
+    pub matches: Vec<String>,
+    pub copy_to: String,
 }
