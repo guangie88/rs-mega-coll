@@ -14,6 +14,12 @@ pub enum ErrorKind {
     #[fail(display = "Default logger initialization error")]
     DefaultLoggerInit,
 
+    #[fail(display = "Directory flag is unexpectedly empty")]
+    DirFlagEmpty,
+
+    #[fail(display = "Unable to create directories for copying to destination")]
+    DirsCreate,
+
     #[fail(display = "Error piping password echo")]
     EchoPwPipe,
 
@@ -26,11 +32,20 @@ pub enum ErrorKind {
     #[fail(display = "Fluent post from tagged record error")]
     FluentPostTaggedRecord,
 
-    #[fail(display = "Cannot find hdfs command")]
-    HdfsNotAvailable,
+    #[fail(display = "Error invoking hdfs dfs -copyToLocal")]
+    HdfsCopyToLocal,
 
     #[fail(display = "Error running hdfs dfs -df command")]
     HdfsDfCmd,
+
+    #[fail(display = "Error invoking hdfs dfs -ls")]
+    HdfsDfsLs,
+
+    #[fail(display = "Cannot find hdfs command")]
+    HdfsNotAvailable,
+
+    #[fail(display = "Error creating regex for hdfs matches")]
+    HdfsRegexMatch,
 
     #[fail(display = "kinit for username and keytab combi returns error")]
     KinitKeytab,
@@ -59,6 +74,15 @@ pub enum ErrorKind {
     #[fail(display = "Cannot execute Postgres query to get database sizes")]
     PgGetDbSizes,
 
+    #[fail(display = "Unable to parse naive date time")]
+    NaiveDateTimeParse,
+
+    #[fail(display = "Unable to parse file size from regex capture")]
+    RegexCapFileSizeParse,
+
+    #[fail(display = "Unable to regex capture permissions")]
+    RegexCapPerm,
+
     #[fail(display = "Cannot capture values from hdfs dfs -df extraction")]
     RegexHdfsDfValuesCap,
 
@@ -85,6 +109,9 @@ pub enum ErrorKind {
 
     #[fail(display = "Conversion from UTF8 stdout to string fail")]
     StdoutUtf8Conversion,
+
+    #[fail(display = "Unable to strip root '/' from path")]
+    StripRootPath,
 
     #[fail(display = "TOML config parse error")]
     TomlConfigParse,
