@@ -1,6 +1,6 @@
 use failure::{Backtrace, Context, Fail};
 use std;
-use std::fmt::{self, Display};
+use std::fmt::{self, Debug, Display};
 
 pub mod custom;
 
@@ -157,13 +157,19 @@ pub enum ErrorKind {
 }
 
 #[derive(Debug)]
-pub struct Error {
-    pub inner: Context<ErrorKind>,
+pub struct Error<K>
+where
+    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
+    pub inner: Context<K>,
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error<ErrorKind>>;
 
-impl Fail for Error {
+impl<K> Fail for Error<K>
+where
+    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     fn cause(&self) -> Option<&Fail> {
         self.inner.cause()
     }
@@ -173,7 +179,10 @@ impl Fail for Error {
     }
 }
 
-impl Display for Error {
+impl<K> Display for Error<K>
+where
+    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
@@ -185,16 +194,22 @@ impl Display for Error {
     }
 }
 
-impl From<ErrorKind> for Error {
-    fn from(kind: ErrorKind) -> Error {
+impl<K> From<K> for Error<K>
+where
+    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
+    fn from(kind: K) -> Error<K> {
         Error {
             inner: Context::new(kind),
         }
     }
 }
 
-impl From<Context<ErrorKind>> for Error {
-    fn from(inner: Context<ErrorKind>) -> Error {
+impl<K> From<Context<K>> for Error<K>
+where
+    K: Copy + Clone + Eq + PartialEq + Debug + Fail,
+{
+    fn from(inner: Context<K>) -> Error<K> {
         Error { inner }
     }
 }

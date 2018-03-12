@@ -9,8 +9,10 @@ pub fn extract_child_stdout(child: Child) -> Result<ChildStdout> {
 
     let stdout = stdout.ok_or_else(|| {
         let msg_err = stderr
-            .ok_or_else(|| -> Error { ErrorKind::StderrEmpty.into() })
-            .and_then(|mut bytes| -> Result<Error> {
+            .ok_or_else(|| -> Error<ErrorKind> {
+                ErrorKind::StderrEmpty.into()
+            })
+            .and_then(|mut bytes| -> Result<Error<ErrorKind>> {
                 let mut msg = String::new();
 
                 bytes
