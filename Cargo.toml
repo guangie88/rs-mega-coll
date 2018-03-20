@@ -14,6 +14,7 @@ lazy_static = "1"
 log = "0.4"
 log4rs = "0.8"
 postgres = { version = "0.15", features = ["with-native-tls"] }
+native-tls = "0.1"
 regex = "0.2"
 serde = "1"
 serde_derive = "1"

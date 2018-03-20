@@ -11,6 +11,7 @@ extern crate fs2;
 #[macro_use]
 extern crate log;
 extern crate log4rs;
+extern crate native_tls;
 extern crate postgres;
 extern crate regex;
 extern crate serde;
