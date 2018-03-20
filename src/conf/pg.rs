@@ -20,6 +20,7 @@ pub struct Config {
 pub struct TlsHandshakeRep {
     pub domain: String,
     pub url: String,
+    pub pem_files: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
