@@ -1,25 +1,27 @@
+use error::{ErrorKind, Result};
+use failure::ResultExt;
+use filebuffer::FileBuffer;
+use native_tls::{Certificate, TlsConnector};
 use postgres::tls::native_tls::NativeTls;
-use serde::de::{Deserialize, Deserializer};
-// use std::net::TcpStream;
+use serde::de::{self, Deserialize, Deserializer};
+use std;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub connection_url: String,
     pub estimated_cap: u64,
-    pub tls_mode: TlsModeRep,
+    pub tls_mode: TlsModeNative,
 }
 
-// #[derive(Debug)]
-// pub enum TlsModeNative {
-//     None,
-//     Prefer(NativeTls),
-//     Require(NativeTls),
-// }
+#[derive(Debug)]
+pub enum TlsModeNative {
+    None,
+    Prefer(NativeTls),
+    Require(NativeTls),
+}
 
 #[derive(Deserialize, Debug)]
 pub struct TlsHandshakeRep {
-    pub domain: String,
-    pub url: String,
     pub pem_files: Vec<String>,
 }
 
@@ -31,35 +33,42 @@ pub enum TlsModeRep {
     Require(TlsHandshakeRep),
 }
 
-// fn hs_to_tls(hs: &TlsHandshakeRep) -> NativeTls {
-//     let mut tls = NativeTls::new().unwrap();
+fn to_native_tls(hs: &TlsHandshakeRep) -> Result<NativeTls> {
+    let mut conn_builder =
+        TlsConnector::builder().context(ErrorKind::TlsConnectorBuilder)?;
 
-//     {
-//         let stream = TcpStream::connect(&hs.url).unwrap();
-//         let connector = tls.connector_mut();
-//         connector.connect(&hs.domain, &stream).unwrap();
-//     }
+    for pem_file in &hs.pem_files {
+        let pem_buf = FileBuffer::open(pem_file)
+            .context(ErrorKind::PemCertificateFileOpen)?;
 
-//     tls
-// }
+        conn_builder
+            .add_root_certificate(Certificate::from_pem(&pem_buf)
+                .context(ErrorKind::PemCertificateRead)?)
+            .context(ErrorKind::TlsConnectorBuilderAddRootCertificate)?;
+    }
 
-// impl<'de> Deserialize<'de> for TlsModeNative {
-//     fn deserialize<D>(d: D) -> Result<Self, D::Error>
-//     where
-//         D: Deserializer<'de>,
-//     {
-//         let rep: TlsModeRep = Deserialize::deserialize(d)?;
+    let conn = conn_builder
+        .build()
+        .context(ErrorKind::TlsConnectorBuilderBuild)?;
 
-//         Ok(match rep {
-//             TlsModeRep::None => TlsModeNative::None,
-//             TlsModeRep::Prefer(hs) => {
-//                 let tls = hs_to_tls(&hs);
-//                 TlsModeNative::Prefer(tls)
-//             }
-//             TlsModeRep::Require(hs) => {
-//                 let tls = hs_to_tls(&hs);
-//                 TlsModeNative::Require(tls)
-//             }
-//         })
-//     }
-// }
+    Ok(NativeTls::from(conn))
+}
+
+impl<'de> Deserialize<'de> for TlsModeNative {
+    fn deserialize<D>(d: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let rep: TlsModeRep = Deserialize::deserialize(d)?;
+
+        let to_tls = |hs| -> std::result::Result<NativeTls, D::Error> {
+            to_native_tls(&hs).map_err(de::Error::custom)
+        };
+
+        Ok(match rep {
+            TlsModeRep::None => TlsModeNative::None,
+            TlsModeRep::Prefer(hs) => TlsModeNative::Prefer(to_tls(hs)?),
+            TlsModeRep::Require(hs) => TlsModeNative::Require(to_tls(hs)?),
+        })
+    }
+}

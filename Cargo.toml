@@ -8,6 +8,7 @@ chrono = { version = "0.4", features = ["serde"] }
 derive-getters = "^0.0.3"
 failure = "0.1"
 failure_derive = "0.1"
+filebuffer = "0.3"
 fruently = "0.10"
 fs2 = "0.4"
 lazy_static = "1"

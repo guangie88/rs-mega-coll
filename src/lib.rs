@@ -6,6 +6,7 @@ extern crate derive_getters;
 extern crate failure;
 #[macro_use]
 extern crate failure_derive;
+extern crate filebuffer;
 extern crate fruently;
 extern crate fs2;
 #[macro_use]
