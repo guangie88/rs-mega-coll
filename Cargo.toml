@@ -1,6 +1,6 @@
 [package]
 name = "mega-coll"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Chen Weiguang <chen.weiguang@gmail.com>"]
 
 [dependencies]
@@ -13,6 +13,7 @@ fs2 = "0.4"
 lazy_static = "1"
 log = "0.4"
 log4rs = "0.8"
+postgres = { version = "0.15", features = ["with-native-tls"] }
 regex = "0.2"
 serde = "1"
 serde_derive = "1"
