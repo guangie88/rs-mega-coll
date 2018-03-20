@@ -1,6 +1,6 @@
 use postgres::tls::native_tls::NativeTls;
 use serde::de::{Deserialize, Deserializer};
-use std::fs::File;
+use std::net::TcpStream;
 
 #[derive(Deserialize, Debug)]
 pub struct Config {
@@ -19,7 +19,7 @@ pub enum TlsModeNative {
 #[derive(Deserialize, Debug)]
 struct TlsHandshakeRep {
     domain: String,
-    pub_key_path: String,
+    url: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -34,9 +34,9 @@ fn hs_to_tls(hs: &TlsHandshakeRep) -> NativeTls {
     let mut tls = NativeTls::new().unwrap();
 
     {
-        let f = File::open(&hs.pub_key_path).unwrap();
+        let stream = TcpStream::connect(&hs.url).unwrap();
         let connector = tls.connector_mut();
-        connector.connect(&hs.domain, &f).unwrap();
+        connector.connect(&hs.domain, &stream).unwrap();
     }
 
     tls
