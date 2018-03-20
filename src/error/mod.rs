@@ -101,6 +101,12 @@ pub enum ErrorKind {
     #[fail(display = "Cannot parse hdfs dfs -df used value")]
     ParseHdfsDfUsedValue,
 
+    #[fail(display = "PEM certificate file open error")]
+    PemCertificateFileOpen,
+
+    #[fail(display = "PEM certificate read error")]
+    PemCertificateRead,
+
     #[fail(display = "Cannot connect to Postgres server")]
     PgConnection,
 
@@ -148,6 +154,15 @@ pub enum ErrorKind {
 
     #[fail(display = "Unable to strip root '/' from path")]
     StripRootPath,
+
+    #[fail(display = "TLS connector builder error")]
+    TlsConnectorBuilder,
+
+    #[fail(display = "TLS connector builder add root certificate error")]
+    TlsConnectorBuilderAddRootCertificate,
+
+    #[fail(display = "TLS connector builder build connection error")]
+    TlsConnectorBuilderBuild,
 
     #[fail(display = "Pretty string conversion error")]
     ToStringPretty,
