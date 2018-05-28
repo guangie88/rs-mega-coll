@@ -38,7 +38,9 @@ pub enum ErrorKind {
     #[fail(display = "Directory flag is unexpectedly empty")]
     DirFlagEmpty,
 
-    #[fail(display = "Unable to create directories for copying to destination")]
+    #[fail(
+        display = "Unable to create directories for copying to destination"
+    )]
     DirsCreate,
 
     #[fail(display = "Error piping password echo")]

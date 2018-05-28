@@ -1,6 +1,6 @@
-use std::time::Duration;
 use serde::de::DeserializeOwned;
 use serde_humantime;
+use std::time::Duration;
 use structopt::StructOpt;
 
 pub trait ArgConf: StructOpt {
