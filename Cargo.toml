@@ -5,7 +5,6 @@ authors = ["Chen Weiguang <chen.weiguang@gmail.com>"]
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
-derive-getters = "^0.0.4"
 failure = "0.1"
 failure_derive = "0.1"
 filebuffer = "0.3"

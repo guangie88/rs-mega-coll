@@ -1,6 +1,6 @@
 use chrono::{DateTime, Local};
 
-#[derive(Serialize, Deserialize, Getters, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Storage {
     path: String,
     capacity: u64,
@@ -9,6 +9,36 @@ pub struct Storage {
     used_prop: f64,
     remaining_prop: f64,
     datetime: DateTime<Local>,
+}
+
+impl Storage {
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
+    pub fn capacity(&self) -> &u64 {
+        &self.capacity
+    }
+
+    pub fn used(&self) -> &u64 {
+        &self.used
+    }
+
+    pub fn remaining(&self) -> &u64 {
+        &self.remaining
+    }
+
+    pub fn used_prop(&self) -> &f64 {
+        &self.used_prop
+    }
+
+    pub fn remaining_prop(&self) -> &f64 {
+        &self.remaining_prop
+    }
+
+    pub fn datetime(&self) -> &DateTime<Local> {
+        &self.datetime
+    }
 }
 
 #[derive(Default, Debug)]
