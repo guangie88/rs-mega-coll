@@ -1,7 +1,7 @@
 use conf::app::{ArgConf, Conf};
 use conf::fluentd;
-use error::{Error, ErrorKind};
 use error::custom::PathError;
+use error::{Error, ErrorKind};
 use failure::{Fail, ResultExt};
 use fruently::fluent::Fluent;
 use fruently::forwardable::JsonForwardable;

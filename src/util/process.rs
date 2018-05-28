@@ -1,5 +1,5 @@
-use error::{Error, ErrorKind};
 use error::custom::{CodeMsgError, MsgError};
+use error::{Error, ErrorKind};
 use failure::{Context, Fail, ResultExt};
 use std::fmt::Debug;
 use std::io::Read;
@@ -23,9 +23,7 @@ where
                     .read_to_string(&mut msg)
                     .context(ErrorKind::StderrRead)?;
 
-                Ok(MsgError::new(msg)
-                    .context(ErrorKind::StderrValidMsg)
-                    .into())
+                Ok(MsgError::new(msg).context(ErrorKind::StderrValidMsg).into())
             });
 
         match msg_err {

@@ -34,9 +34,7 @@ impl MsgError {
     where
         S: Into<String>,
     {
-        MsgError {
-            msg: msg.into(),
-        }
+        MsgError { msg: msg.into() }
     }
 }
 
@@ -77,9 +75,7 @@ impl PermError {
     where
         P: Into<String>,
     {
-        PermError {
-            perm: perm.into(),
-        }
+        PermError { perm: perm.into() }
     }
 }
 
@@ -130,8 +126,13 @@ impl RegexCaptureError {
 }
 
 #[derive(Debug, Fail)]
-#[fail(display = "{{ found len: {}, expected len: {}, target: {}, regex: {} }}",
-       found_len, expected_len, target, re_str)]
+#[fail(
+    display = "{{ found len: {}, expected len: {}, target: {}, regex: {} }}",
+    found_len,
+    expected_len,
+    target,
+    re_str
+)]
 pub struct RegexMinCaptureError {
     pub found_len: usize,
     pub expected_len: usize,
@@ -211,11 +212,7 @@ where
     T: Debug + Display + Sync + Send + 'static,
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "{{ desc: {}, value: {} }}",
-            self.desc, self.value
-        )
+        write!(f, "{{ desc: {}, value: {} }}", self.desc, self.value)
     }
 }
 
