@@ -42,8 +42,10 @@ fn to_native_tls(hs: &TlsHandshakeRep) -> Result<NativeTls> {
             .context(ErrorKind::PemCertificateFileOpen)?;
 
         conn_builder
-            .add_root_certificate(Certificate::from_pem(&pem_buf)
-                .context(ErrorKind::PemCertificateRead)?)
+            .add_root_certificate(
+                Certificate::from_pem(&pem_buf)
+                    .context(ErrorKind::PemCertificateRead)?,
+            )
             .context(ErrorKind::TlsConnectorBuilderAddRootCertificate)?;
     }
 
