@@ -14,6 +14,9 @@ pub enum ErrorKind {
     #[fail(display = "CSV entry record parse error")]
     CsvEntryParse,
 
+    #[fail(display = "Database connection error")]
+    DbConn,
+
     #[fail(display = "Database entry cache creation error")]
     DbEntryCreate,
 
@@ -23,14 +26,8 @@ pub enum ErrorKind {
     #[fail(display = "Parse database entry expiry error")]
     DbEntryExpiryParse,
 
-    #[fail(display = "Database entry serialize error")]
-    DbEntrySerialize,
-
-    #[fail(display = "Get database new iterator error")]
-    DbNewIter,
-
-    #[fail(display = "Database file open error")]
-    DbOpen,
+    #[fail(display = "Database loading of entries error")]
+    DbEntryLoad,
 
     #[fail(display = "Default logger initialization error")]
     DefaultLoggerInit,
